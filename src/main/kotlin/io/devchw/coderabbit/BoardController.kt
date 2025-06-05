@@ -23,7 +23,12 @@ class BoardController {
     private val posts = mutableMapOf<Long, Post>()
     private val idGenerator = AtomicLong(1)
 
-    // 게시물 생성
+    /**
+     * Creates a new post, assigns it a unique ID, and stores it in memory.
+     *
+     * @param post The post data to create.
+     * @return The created post with its assigned ID and HTTP status 201 (Created).
+     */
     @PostMapping
     fun createPost(@RequestBody post: Post): ResponseEntity<Post> {
         val id = idGenerator.getAndIncrement()
@@ -32,13 +37,24 @@ class BoardController {
         return ResponseEntity.status(HttpStatus.CREATED).body(post)
     }
 
-    // 게시물 목록 조회
+    /**
+     * Retrieves a list of all posts.
+     *
+     * @return HTTP 200 response containing all stored posts.
+     */
     @GetMapping
     fun getPosts(): ResponseEntity<List<Post>> {
         return ResponseEntity.ok(posts.values.toList())
     }
 
-    // 게시물 상세 조회
+    /**
+     * Retrieves a post by its unique ID.
+     *
+     * Returns the post with HTTP 200 if found, or HTTP 404 if no post exists with the given ID.
+     *
+     * @param id The unique identifier of the post to retrieve.
+     * @return A ResponseEntity containing the post if found, or a 404 status if not.
+     */
     @GetMapping("/{id}")
     fun getPost(@PathVariable id: Long): ResponseEntity<Post> {
         val post = posts[id]
@@ -49,7 +65,16 @@ class BoardController {
         }
     }
 
-    // 게시물 수정
+    /**
+     * Updates an existing post with new data by its ID.
+     *
+     * If the post with the specified ID does not exist, returns HTTP 404 (Not Found).
+     * Otherwise, replaces the post's content and returns the updated post with HTTP 200 (OK).
+     *
+     * @param id The ID of the post to update.
+     * @param updatedPost The new post data to replace the existing post.
+     * @return The updated post with HTTP 200, or HTTP 404 if the post does not exist.
+     */
     @PutMapping("/{id}")
     fun updatePost(@PathVariable id: Long, @RequestBody updatedPost: Post): ResponseEntity<Post> {
         if (!posts.containsKey(id)) {
@@ -60,7 +85,14 @@ class BoardController {
         return ResponseEntity.ok(updatedPost)
     }
 
-    // 게시물 삭제
+    /**
+     * Deletes a post by its ID.
+     *
+     * Removes the post with the specified ID from the in-memory store. Returns HTTP 204 (No Content) if the post was deleted, or HTTP 404 (Not Found) if the post does not exist.
+     *
+     * @param id The unique identifier of the post to delete.
+     * @return A ResponseEntity with HTTP status 204 if successful, or 404 if the post is not found.
+     */
     @DeleteMapping("/{id}")
     fun deletePost(@PathVariable id: Long): ResponseEntity<Void> {
         if (!posts.containsKey(id)) {
