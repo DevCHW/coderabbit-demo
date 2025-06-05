@@ -7,5 +7,6 @@ package io.devchw.coderabbit
 data class Post(
     var id: Long? = null,
     var title: String,
-    var content: String
+    var content: String,
+    var comments: MutableList<Comment> = mutableListOf()
 )

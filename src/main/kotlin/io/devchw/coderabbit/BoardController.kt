@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.concurrent.atomic.AtomicLong
+import org.springframework.beans.factory.annotation.Autowired
 
 /**
  * @author DevCHW
@@ -18,7 +19,9 @@ import java.util.concurrent.atomic.AtomicLong
  */
 @RestController
 @RequestMapping("/api/board")
-class BoardController {
+class BoardController(
+    @Autowired private val commentController: CommentController
+) {
 
     private val posts = mutableMapOf<Long, Post>()
     private val idGenerator = AtomicLong(1)
@@ -98,6 +101,10 @@ class BoardController {
         if (!posts.containsKey(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         }
+
+        // 게시물과 관련된 모든 댓글 삭제
+        commentController.deleteAllCommentsForPost(id)
+
         posts.remove(id)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
